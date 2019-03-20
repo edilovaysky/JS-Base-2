@@ -1,11 +1,11 @@
-function makeGETRequest(url, promise) {
+function makeGETRequest(url) {
   const xhr = window.XMLHttpRequest
     ? new window.XMLHttpRequest()
     : new window.ActiveXObject();
   promise = () => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (xhr.readyState === 4) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
           resolve(xhr.responseText);
         } else {
           reject("Error");
@@ -38,8 +38,9 @@ class GoodsList {
     this.goods = [];
   }
   fetchGoods() {
-    makeGETRequest("/goods.json", goods => {
+    makeGETRequest("https://api.myjson.com/bins/18cup6", (goods) => {
       this.goods = JSON.parse(goods);
+        this.render();
     });
   }
   render() {
