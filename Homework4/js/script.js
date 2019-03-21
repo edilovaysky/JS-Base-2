@@ -39,19 +39,23 @@ class GoodsList {
     this.filteredGoods = [];
   }
   fetchGoods() {
-    makeGETRequest("https://api.myjson.com/bins/7oju2").then(goods => {
-      this.goods = goods;
-      this.filteredGoods = goods;
-      this.render();
-       console.log(goods);
-    });
+    return makeGETRequest("https://api.myjson.com/bins/7oju2")
+      .then(goods => {
+        this.goods = goods;
+        this.filteredGoods = goods;
+        this.render();
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
     // или используем метод fetch
     /*   fetch('http://json-file-url').then((res) => res.json()) 
     .then((goods) => {
       this.goods = JSON.parse(goods);
       this.render();
     }); */
-  };
+  }
   filterGoods(value) {
     const regexp = new RegExp(value, "i");
     this.filteredGoods = this.goods.filter(good => regexp.test(good.title));
@@ -66,7 +70,7 @@ class GoodsList {
     document.querySelector(".goods-list").innerHTML = listHtml;
   }
   getGoodsSum() {
- /*    let goodsSum = 0;
+    /*    let goodsSum = 0;
     let list = new GoodsList;
     list.fetchGoods();
     console.log(list);
@@ -120,17 +124,19 @@ class CartItem extends GoodItem {
 }
 
 const list = new GoodsList();
-// list.fetchGoods();
 
-const goodsSum = new GoodsList();
-console.log(goodsSum.getGoodsSum()); // Выводим сумму стоимости всех доступных товаров
-
-window.onload = () => {
-  list.fetchGoods();
+window.onload = async () => {
   const searchInput = document.querySelector(".search-goods");
   const searchBtn = document.querySelector(".search-btn");
   searchBtn.addEventListener("click", () => {
     const value = searchInput.value;
     list.filterGoods(value);
   });
+  try {
+    await list.fetchGoods();
+    const totalPrice = list.getGoodsSum();
+    console.log(totalPrice);
+  } catch (error) {
+    console.console.error(err);
+  }
 };
